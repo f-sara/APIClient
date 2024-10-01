@@ -3,6 +3,11 @@
 
 import Foundation
 
+enum APIClientError: Error {
+    case failedToCreateURL
+}
+
+
 class APIClient {
 
 
