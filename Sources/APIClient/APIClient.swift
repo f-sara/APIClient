@@ -10,10 +10,15 @@ enum APIClientError: Error {
 
 class APIClient {
 
-
     public func decodeAPIResponse<T: Decodable>(_ response: Data) throws -> T {
         let decoder = JSONDecoder()
         let data = try decoder.decode(T.self, from: response)
+        return data
+    }
+
+    public func encodeAPIRequest<T: Encodable>(_ request: T) throws -> Data {
+        let encoded = JSONEncoder()
+        let data = try encoded.encode(request)
         return data
     }
 
