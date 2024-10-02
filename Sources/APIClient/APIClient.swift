@@ -4,7 +4,8 @@
 import Foundation
 
 enum APIClientError: Error {
-    case failedToCreateURL
+    case failedCreateBaseURL
+    case failedCreateAPIEndpoint
     case invalidURL
     case sessionError
     case requestError(Error)
@@ -49,12 +50,13 @@ final public class APIClient: Sendable {
         return data
     }
 
-    public func createAPIEndpoint(url: String, format: String, queryItems: [String: String]) throws -> URL? {
+    public func createAPIEndpoint(url: String, queryItems: [String: String]) throws -> URL {
         let baseURL: URL? = URL(string: url)
 
         guard let baseURL else {
-            throw APIClientError.sessionError
+            throw APIClientError.failedCreateBaseURL
         }
+
         var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
 
         if urlComponents == nil {
@@ -62,10 +64,16 @@ final public class APIClient: Sendable {
         }
 
         for (key, value) in queryItems {
-            urlComponents?.queryItems?.append(URLQueryItem(name: key, value: value))
+            let queryItem = URLQueryItem(name: key, value: value)
+            urlComponents?.queryItems?.append(queryItem)
+            print(urlComponents?.queryItems ?? "url is nil")
         }
 
-        return urlComponents?.url
+        guard let url = urlComponents?.url else {
+            throw APIClientError.failedCreateAPIEndpoint
+        }
+
+        return url
     }
 
 }
