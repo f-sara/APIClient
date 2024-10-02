@@ -5,6 +5,9 @@ import Foundation
 
 enum APIClientError: Error {
     case failedToCreateURL
+    case sessionError
+    case requestError(Error)
+    case decodeError(Error)
 }
 
 
