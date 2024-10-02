@@ -63,6 +63,10 @@ final public class APIClient: Sendable {
             throw APIClientError.invalidURL
         }
 
+        if urlComponents?.queryItems == nil {
+            urlComponents?.queryItems = []
+        }
+
         for (key, value) in queryItems {
             let queryItem = URLQueryItem(name: key, value: value)
             urlComponents?.queryItems?.append(queryItem)
