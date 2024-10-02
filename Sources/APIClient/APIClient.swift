@@ -10,8 +10,31 @@ enum APIClientError: Error {
     case decodeError(Error)
 }
 
+final public class APIClient: Sendable {
 
-class APIClient {
+    public func fetchData<T: Decodable>(url: URL,dataType: T.Type, completion: @Sendable @escaping (Result<T, Error>) -> Void) {
+        let request = URLRequest(url: url)
+
+        URLSession.shared.dataTask(with: request) { (data, _, error) in
+            if let error {
+                completion(.failure(APIClientError.requestError(error)))
+                return
+            }
+
+            guard let data else {
+                completion(.failure(APIClientError.sessionError))
+                return
+            }
+
+            do {
+                let responseData: T = try self.decodeAPIResponse(data)
+                completion(.success(responseData))
+            } catch {
+                completion(.failure(APIClientError.decodeError(error)))
+            }
+
+        }.resume()
+    }
 
     public func decodeAPIResponse<T: Decodable>(_ response: Data) throws -> T {
         let decoder = JSONDecoder()
