@@ -3,13 +3,34 @@
 
 import Foundation
 
-enum APIClientError: Error {
+enum APIClientError: Error, Equatable{
     case failedCreateBaseURL
     case failedCreateAPIEndpoint
     case invalidURL
     case sessionError
     case requestError(Error)
     case decodeError(Error)
+
+    static func == (lhs: APIClientError, rhs: APIClientError) -> Bool {
+        switch (lhs, rhs) {
+        case (.failedCreateBaseURL, .failedCreateBaseURL):
+            return true
+        case (.failedCreateAPIEndpoint, .failedCreateAPIEndpoint):
+            return true
+        case (.invalidURL, .invalidURL):
+            return true
+        case (.sessionError, .sessionError):
+            return true
+        case (let .requestError(error1), let .requestError(error2)):
+            return (error1 as NSError).domain == (error2 as NSError).domain &&
+                   (error1 as NSError).code == (error2 as NSError).code
+        case (let .decodeError(error1), let .decodeError(error2)):
+            return (error1 as NSError).domain == (error2 as NSError).domain &&
+                   (error1 as NSError).code == (error2 as NSError).code
+        default:
+            return false
+        }
+    }
 }
 
 final public class APIClient: Sendable {
