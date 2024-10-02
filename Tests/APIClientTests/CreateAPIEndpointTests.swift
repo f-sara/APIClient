@@ -6,6 +6,7 @@
 //
 
 import Testing
+import Foundation
 @testable import APIClient
 
 @Suite final class CreateAPIEndpointTests{
@@ -18,6 +19,18 @@ import Testing
         let invalidURL = "https://example .com"
         #expect(throws: APIClientError.failedCreateBaseURL) {
             try apiClient.createAPIEndpoint(url: invalidURL, queryItems: testQueryItems)
+        }
+    }
+
+    @Test func createAPIEndpointTest() {
+        let endpoint = URL(string: "https://example.com?name=john_doe&id=1")
+        do {
+            let url =
+            try apiClient.createAPIEndpoint(url: testUrl, queryItems: testQueryItems)
+            print(url)
+            #expect(endpoint == url)
+        } catch {
+            Issue.record("Test Failed: createAPIEndpointTest throws error: \(error)")
         }
     }
 
