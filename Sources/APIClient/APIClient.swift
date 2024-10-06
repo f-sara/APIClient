@@ -6,7 +6,7 @@ import Foundation
 enum APIClientError: Error, Equatable{
     case failedCreateBaseURL
     case failedCreateAPIEndpoint
-    case invalidURL
+    case invalidBaseURL
     case sessionError
     case requestError(Error)
     case decodeError(Error)
@@ -17,7 +17,7 @@ enum APIClientError: Error, Equatable{
             return true
         case (.failedCreateAPIEndpoint, .failedCreateAPIEndpoint):
             return true
-        case (.invalidURL, .invalidURL):
+        case (.invalidBaseURL, .invalidBaseURL):
             return true
         case (.sessionError, .sessionError):
             return true
@@ -81,7 +81,7 @@ final public class APIClient: Sendable {
         var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
 
         if urlComponents == nil {
-            throw APIClientError.invalidURL
+            throw APIClientError.invalidBaseURL
         }
 
         if urlComponents?.queryItems == nil {
@@ -91,7 +91,6 @@ final public class APIClient: Sendable {
         for (key, value) in queryItems {
             let queryItem = URLQueryItem(name: key, value: value)
             urlComponents?.queryItems?.append(queryItem)
-            print(urlComponents?.queryItems ?? "url is nil")
         }
 
         guard let url = urlComponents?.url else {

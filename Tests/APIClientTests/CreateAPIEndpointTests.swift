@@ -27,11 +27,9 @@ import Foundation
         do {
             let url =
             try apiClient.createAPIEndpoint(url: testUrl, queryItems: testQueryItems)
-            print(url)
             #expect(endpoint == url)
         } catch {
             Issue.record("Test Failed: createAPIEndpointTest throws error: \(error)")
         }
     }
-
 }
