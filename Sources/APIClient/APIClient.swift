@@ -3,13 +3,34 @@
 
 import Foundation
 
-enum APIClientError: Error {
+enum APIClientError: Error, Equatable{
     case failedCreateBaseURL
     case failedCreateAPIEndpoint
-    case invalidURL
+    case invalidBaseURL
     case sessionError
     case requestError(Error)
     case decodeError(Error)
+
+    static func == (lhs: APIClientError, rhs: APIClientError) -> Bool {
+        switch (lhs, rhs) {
+        case (.failedCreateBaseURL, .failedCreateBaseURL):
+            return true
+        case (.failedCreateAPIEndpoint, .failedCreateAPIEndpoint):
+            return true
+        case (.invalidBaseURL, .invalidBaseURL):
+            return true
+        case (.sessionError, .sessionError):
+            return true
+        case (let .requestError(error1), let .requestError(error2)):
+            return (error1 as NSError).domain == (error2 as NSError).domain &&
+                   (error1 as NSError).code == (error2 as NSError).code
+        case (let .decodeError(error1), let .decodeError(error2)):
+            return (error1 as NSError).domain == (error2 as NSError).domain &&
+                   (error1 as NSError).code == (error2 as NSError).code
+        default:
+            return false
+        }
+    }
 }
 
 final public class APIClient: Sendable {
@@ -60,7 +81,7 @@ final public class APIClient: Sendable {
         var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
 
         if urlComponents == nil {
-            throw APIClientError.invalidURL
+            throw APIClientError.invalidBaseURL
         }
 
         if urlComponents?.queryItems == nil {
@@ -70,7 +91,6 @@ final public class APIClient: Sendable {
         for (key, value) in queryItems {
             let queryItem = URLQueryItem(name: key, value: value)
             urlComponents?.queryItems?.append(queryItem)
-            print(urlComponents?.queryItems ?? "url is nil")
         }
 
         guard let url = urlComponents?.url else {
