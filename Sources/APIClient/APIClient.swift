@@ -71,8 +71,8 @@ final public class APIClient: Sendable {
         return data
     }
 
-    public func createAPIEndpoint(url: String, queryItems: [String: String]) throws -> URL {
-        let baseURL: URL? = URL(string: url)
+    public func createAPIEndpoint(baseUrl: String, queryItems: [String: String]) throws -> URL {
+        let baseURL: URL? = URL(string: baseUrl)
 
         guard let baseURL else {
             throw APIClientError.failedCreateBaseURL
